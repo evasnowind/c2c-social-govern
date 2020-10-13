@@ -16,4 +16,6 @@ C2C 电商系统微服务架构
     - c2c-social-govern-report
     - c2c-social-govern-reviewer
     - c2c-social-govern-reward
+- 运行`mvn clean install`，将api包打入到maven仓库中
+    - 若是maven远端仓库，则需要运行`mvn deploy`部署。
 - 启动时首先运行c2c-social-govern-reward、c2c-social-govern-reviewer（作为service provider），然后再启动c2c-social-govern-report（作为service consumer）
