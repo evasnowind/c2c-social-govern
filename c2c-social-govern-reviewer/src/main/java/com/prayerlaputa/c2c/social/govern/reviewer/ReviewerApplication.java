@@ -7,10 +7,10 @@ import org.springframework.context.annotation.Import;
 
 @SpringBootApplication
 @Import(DruidDataSourceConfig.class)
-public class Application {
+public class ReviewerApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+        SpringApplication.run(ReviewerApplication.class, args);
     }
 
 }

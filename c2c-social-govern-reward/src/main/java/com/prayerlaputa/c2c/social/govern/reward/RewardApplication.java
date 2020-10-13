@@ -11,10 +11,10 @@ import org.springframework.context.annotation.Import;
  */
 @SpringBootApplication
 @Import(DruidDataSourceConfig.class)
-public class Application {
+public class RewardApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+        SpringApplication.run(RewardApplication.class, args);
     }
 
 }

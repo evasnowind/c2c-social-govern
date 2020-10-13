@@ -2,12 +2,15 @@ package com.prayerlaputa.c2c.social.govern.report.controller;
 
 import com.prayerlaputa.c2c.social.govern.report.domain.ReportTask;
 import com.prayerlaputa.c2c.social.govern.report.service.ReportTaskService;
+import com.prayerlaputa.c2c.social.govern.report.service.ReportTaskVoteService;
 import com.prayerlaputa.c2c.social.govern.reviewer.ReviewerService;
 import com.prayerlaputa.c2c.social.govern.reward.api.RewardService;
 import org.apache.dubbo.config.annotation.Reference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 /**
  * 举报服务的接口
@@ -20,6 +23,11 @@ public class ReportController {
      */
     @Autowired
     private ReportTaskService reportTaskService;
+    /**
+     * 举报任务投票Service组件
+     */
+    @Autowired
+    private ReportTaskVoteService reportTaskVoteService;
 
     /**
      * 评审员服务
@@ -39,10 +47,10 @@ public class ReportController {
 
     /**
      * 提交举报接口
-     * @param type
-     * @param reportUserId
-     * @param reportContent
-     * @param targetId
+     * @param type 举报任务类型
+     * @param reportUserId 举报用户id
+     * @param reportContent 举报说明
+     * @param targetId 举报目标对象id
      * @return
      */
     @GetMapping("/report")
@@ -60,7 +68,17 @@ public class ReportController {
         // 在本地数据库增加一个举报任务
         reportTaskService.add(reportTask);
 
+        // 调用评审员服务，选择一批评审员
+        List<Long> reviewerIds = reviewerService.selectReviewers(
+                reportTask.getId());
+        // 在本地数据库初始化这批评审员对举报任务的投票状态
+        reportTaskVoteService.initVotes(reviewerIds, reportTask.getId());
+
+        // 模拟发送push消息给评审员
+        System.out.println("模拟发送push消息给评审员.....");
+
         return "success";
     }
+
 
 }
