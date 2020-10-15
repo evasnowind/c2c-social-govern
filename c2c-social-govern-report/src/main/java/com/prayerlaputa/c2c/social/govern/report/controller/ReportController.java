@@ -1,6 +1,7 @@
 package com.prayerlaputa.c2c.social.govern.report.controller;
 
 import com.prayerlaputa.c2c.social.govern.report.domain.ReportTask;
+import com.prayerlaputa.c2c.social.govern.report.domain.ReportTaskVote;
 import com.prayerlaputa.c2c.social.govern.report.service.ReportTaskService;
 import com.prayerlaputa.c2c.social.govern.report.service.ReportTaskVoteService;
 import com.prayerlaputa.c2c.social.govern.reviewer.ReviewerService;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -80,5 +82,44 @@ public class ReportController {
         return "success";
     }
 
+    /**
+     * 对举报任务进行投票
+     * @param reviewerId 评审员id
+     * @param reportTaskId 举报任务id
+     * @param voteResult 投票结果
+     * @return
+     */
+    @GetMapping("/report/vote")
+    public String vote(
+            Long reviewerId,
+            Long reportTaskId,
+            Integer voteResult) {
+        // 本地数据库记录投票
+        reportTaskVoteService.vote(reviewerId, reportTaskId, voteResult);
+        // 调用评审员服务，标记本次投票结束
+        reviewerService.finishVote(reviewerId, reportTaskId);
 
+        // 对举报任务进行归票
+        Boolean hasFinishedVote = reportTaskVoteService
+                .calculateVotes(reportTaskId);
+
+        // 如果举报任务得到归票结果
+        if(hasFinishedVote) {
+            // 发放奖励
+            List<ReportTaskVote> reportTaskVotes = reportTaskVoteService
+                    .queryByReportTaskId(reportTaskId);
+            List<Long> reviewerIds = new ArrayList<Long>();
+
+            for(ReportTaskVote reportTaskVote : reportTaskVotes) {
+                reviewerIds.add(reportTaskVote.getReviewerId());
+            }
+
+            rewardService.giveReward(reviewerIds);
+
+            // 推送消息到MQ，告知其他系统，本次评审结果
+            System.out.println("推送消息到MQ，告知其他系统，本次评审结果");
+        }
+
+        return "success";
+    }
 }

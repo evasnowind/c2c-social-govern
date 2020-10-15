@@ -26,4 +26,14 @@ public class ReportTaskServiceImpl implements ReportTaskService {
     public void add(ReportTask reportTask) {
         reportTaskDAO.add(reportTask);
     }
+
+    /**
+     * 根据id查询举报任务
+     * @param id 举报任务id
+     * @return 举报任务
+     */
+    @Override
+    public ReportTask queryById(Long id) {
+        return reportTaskDAO.queryById(id);
+    }
 }

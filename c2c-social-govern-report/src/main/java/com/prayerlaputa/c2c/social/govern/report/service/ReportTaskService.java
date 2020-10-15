@@ -13,4 +13,11 @@ public interface ReportTaskService {
      */
     void add(ReportTask reportTask);
 
+
+    /**
+     * 根据id查询举报任务
+     * @param id 举报任务id
+     * @return 举报任务
+     */
+    ReportTask queryById(Long id);
 }
